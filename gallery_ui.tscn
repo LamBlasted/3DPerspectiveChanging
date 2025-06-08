@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnm60mimnlcd2"]
+
+[ext_resource type="Script" uid="uid://c7k0wxd0b4de4" path="res://gallery_ui.gd" id="1_5pid3"]
+
+[node name="GalleryUI" type="CanvasLayer"]
+script = ExtResource("1_5pid3")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="Panel" type="Panel" parent="Control"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 33.0
+offset_top = 85.0
+offset_right = 135.0
+offset_bottom = 188.0
+grow_vertical = 2
+scale = Vector2(2.39052, 1.32802)
+
+[node name="Sprite2D" type="Sprite2D" parent="Control/Panel"]

@@ -1,0 +1,95 @@
+[gd_scene load_steps=7 format=3 uid="uid://pxya3hno2b17"]
+
+[ext_resource type="Texture2D" uid="uid://h11vibnwk2nq" path="res://icon.svg" id="1_4flbx"]
+
+[sub_resource type="GDScript" id="GDScript_sh265"]
+script/source = "class_name Player extends CharacterBody3D
+
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+
+@onready var camera_controller: Node3D = $CameraController
+@onready var player: CharacterBody3D = $\".\"
+
+
+func _physics_process(delta: float) -> void:
+	# Add the gravity.
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+	# Handle jump.
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var input_dir := Input.get_vector(\"left\", \"right\", \"up\", \"down\")
+	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+	
+	direction.normalized()
+	move_and_slide()
+
+
+
+func _input(event):
+	if event.is_action_pressed(\"switch_camera\"):
+		if player.velocity.y == 0 :
+			camera_controller.change_camera()
+	else: 
+		return null
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sh265"]
+radius = 0.637674
+height = 1.5667
+
+[sub_resource type="QuadMesh" id="QuadMesh_4flbx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_onrkg"]
+albedo_texture = ExtResource("1_4flbx")
+billboard_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_4flbx"]
+script/source = "class_name CamereaController extends Node3D
+
+@onready var camera: Camera3D = $Camera3D
+@onready var fp_camera: Camera3D = $FPCamera3D
+
+var using_first_person := true
+
+func change_camera():
+	using_first_person = !using_first_person
+	fp_camera.current = using_first_person
+	camera.current = not using_first_person
+	
+"
+
+[node name="player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.148338, 0)
+script = SubResource("GDScript_sh265")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.576966, 0.0237136)
+shape = SubResource("CapsuleShape3D_sh265")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.605208, 0)
+mesh = SubResource("QuadMesh_4flbx")
+surface_material_override/0 = SubResource("StandardMaterial3D_onrkg")
+
+[node name="CameraController" type="Node3D" parent="."]
+script = SubResource("GDScript_4flbx")
+
+[node name="Camera3D" type="Camera3D" parent="CameraController"]
+transform = Transform3D(1, 0, 0, 0, 0.57216, 0.820142, 0, -0.820142, 0.57216, 0.00829422, 4.27323, 3.71622)
+fov = 90.0
+
+[node name="FPCamera3D" type="Camera3D" parent="CameraController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00250959, 0.524886, -0.10419)

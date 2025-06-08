@@ -1,0 +1,144 @@
+[gd_scene load_steps=10 format=3 uid="uid://pxya3hno2b17"]
+
+[ext_resource type="Texture2D" uid="uid://h11vibnwk2nq" path="res://icon.svg" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://fm36g5mr14v" path="res://camera_spring_arm.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://haklal1rprit" path="res://head.gd" id="3_i3pqv"]
+
+[sub_resource type="GDScript" id="GDScript_sh265"]
+script/source = "class_name Player extends CharacterBody3D
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+@export var mouse_sensitivity := 0.005
+
+@onready var camera_controller = $CameraController
+@onready var camera: Camera3D = $CameraController/SpringArm3D/Camera3D
+@onready var fp_camera: Camera3D = $CameraController/Head/FPCamera3D
+
+func _ready() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"switch_camera\") and is_on_floor():
+		velocity = Vector3(0,0,0)
+		camera_controller.change_camera()
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+	if Input.is_action_just_pressed(\"ui_accept\") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	var input_dir = Input.get_vector(\"left\", \"right\", \"up\", \"down\")
+	var move_dir = Vector3(input_dir.x, 0, input_dir.y)
+
+	if move_dir != Vector3.ZERO:
+		var cam = camera_controller.fp_camera if camera_controller.using_first_person else camera_controller.camera
+		move_dir = (cam.global_transform.basis * move_dir).normalized()
+		velocity.x = move_dir.x * SPEED
+		velocity.z = move_dir.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+
+	move_and_slide()
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_sh265"]
+radius = 0.637674
+height = 1.5667
+
+[sub_resource type="QuadMesh" id="QuadMesh_4flbx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_onrkg"]
+albedo_texture = ExtResource("1_4flbx")
+billboard_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_4flbx"]
+script/source = "extends Node3D
+class_name CameraController
+
+@onready var camera := $SpringArm3D/Camera3D
+@onready var fp_camera := $Head/FPCamera3D
+@onready var head := $Head
+@export var mouse_sensitivity := 0.001
+
+var using_first_person := false
+var yaw := 0.0
+var pitch := 0.0
+
+func change_camera():
+	using_first_person = !using_first_person
+
+	if using_first_person:
+		# Sync FP camera rotation to TP camera rotation
+		fp_camera.global_rotation = camera.global_rotation
+		fp_camera.rotation_degrees.x = 0
+		# Properly initialize yaw and pitch from player's current rotation
+		var player_rotation = get_parent().rotation
+		yaw = player_rotation.y
+		
+		# For pitch, extract the local x rotation of the head or FP camera
+		pitch = head.rotation.x
+
+		# Reset vertical tilt to match pitch (or zero if you prefer)
+		head.rotation.x = pitch
+
+		$SpringArm3D.visible = false
+	else:
+		$SpringArm3D.visible = true
+		
+		# Sync player rotation yaw when exiting FP mode
+		get_parent().rotation.y = yaw
+
+	camera.current = not using_first_person
+	fp_camera.current = using_first_person
+
+
+func _input(event: InputEvent) -> void:
+	if using_first_person and event is InputEventMouseMotion:
+		# Update yaw and pitch with mouse movement
+		yaw -= event.relative.x * mouse_sensitivity
+		
+		# Clamp pitch so camera can't flip vertically
+		pitch = clamp(pitch, deg_to_rad(-75), deg_to_rad(75))
+		
+		# Apply rotations based on yaw and pitch to head and player
+		head.rotation = Vector3(pitch, 0, 0)
+		get_parent().rotation.y = yaw
+"
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_onrkg"]
+radius = 0.3
+
+[node name="player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.148338, 0)
+script = SubResource("GDScript_sh265")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.576966, 0.0237136)
+shape = SubResource("CapsuleShape3D_sh265")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.605208, 0)
+mesh = SubResource("QuadMesh_4flbx")
+surface_material_override/0 = SubResource("StandardMaterial3D_onrkg")
+
+[node name="CameraController" type="Node3D" parent="."]
+script = SubResource("GDScript_4flbx")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+shape = SubResource("SphereShape3D_onrkg")
+spring_length = 15.0
+script = ExtResource("2_onrkg")
+
+[node name="Camera3D" type="Camera3D" parent="CameraController/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, -7.22487, 3.85391)
+
+[node name="Head" type="Node3D" parent="CameraController"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("3_i3pqv")
+
+[node name="FPCamera3D" type="Camera3D" parent="CameraController/Head"]
