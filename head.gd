@@ -16,3 +16,5 @@ func _input(event: InputEvent) -> void:
 
 		# Apply only yaw — no pitch (X), no roll (Z)
 		rotation = Vector3(0.0, yaw, 0.0)
+
+	

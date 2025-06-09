@@ -7,17 +7,26 @@ script = ExtResource("1_5pid3")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 0
-
-[node name="Panel" type="Panel" parent="Control"]
-layout_mode = 1
-anchors_preset = 9
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 33.0
-offset_top = 85.0
-offset_right = 135.0
-offset_bottom = 188.0
+grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(2.39052, 1.32802)
 
-[node name="Sprite2D" type="Sprite2D" parent="Control/Panel"]
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 0
+offset_right = 1155.0
+offset_bottom = 648.0
+color = Color(0, 0, 0, 0.427451)
+
+[node name="GridContainer" type="GridContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.07
+offset_left = 91.0
+offset_top = 94.0
+offset_right = 974.0
+offset_bottom = 542.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 5
