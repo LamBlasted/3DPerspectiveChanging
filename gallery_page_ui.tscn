@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3 uid="uid://bnm60mimnlcd2"]
+
+[ext_resource type="Script" uid="uid://c7k0wxd0b4de4" path="res://gallery_page_ui.gd" id="1_80tnh"]
+[ext_resource type="Texture2D" uid="uid://cgghttbk0yrp2" path="res://Field Log 01.png" id="2_uly3p"]
+[ext_resource type="Texture2D" uid="uid://d2agsbu2qwp4x" path="res://Field Log Title Page.png" id="3_uly3p"]
+[ext_resource type="Texture2D" uid="uid://l6psre4pscqr" path="res://Arrow_Button-removebg-preview.png" id="4_jt0bl"]
+
+[node name="GalleryPageUI" type="CanvasLayer"]
+script = ExtResource("1_80tnh")
+
+[node name="LogPage" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FieldLog01" type="Sprite2D" parent="LogPage"]
+position = Vector2(576, 324)
+texture = ExtResource("2_uly3p")
+
+[node name="GridContainer" type="GridContainer" parent="LogPage"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.07
+offset_left = 46.82
+offset_top = 63.0
+offset_right = 1018.18
+offset_bottom = 596.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 4
+
+[node name="TextureButton" type="TextureButton" parent="LogPage"]
+offset_left = 34.0
+offset_top = 544.0
+offset_right = 184.0
+offset_bottom = 644.0
+texture_normal = ExtResource("4_jt0bl")
+flip_h = true
+
+[node name="CoverPage" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FieldLogTitlePage" type="Sprite2D" parent="CoverPage"]
+position = Vector2(576, 324)
+texture = ExtResource("3_uly3p")
+
+[node name="TextureButton" type="TextureButton" parent="CoverPage"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 546.0
+offset_right = 1110.0
+offset_bottom = 646.0
+texture_normal = ExtResource("4_jt0bl")
+
+[connection signal="pressed" from="LogPage/TextureButton" to="." method="_01_to_cover_page"]
+[connection signal="pressed" from="CoverPage/TextureButton" to="." method="cover_page_to_01"]

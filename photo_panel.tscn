@@ -1,13 +1,22 @@
-[gd_scene format=3 uid="uid://d3w4lk2w7q4dw"]
+[gd_scene load_steps=2 format=3 uid="uid://d3w4lk2w7q4dw"]
+
+[ext_resource type="Texture2D" uid="uid://du0rdg3ond2p6" path="res://Polaroid Frame.png" id="1_xvtgu"]
 
 [node name="PhotoPanel" type="Panel"]
-custom_minimum_size = Vector2(192, 108)
+custom_minimum_size = Vector2(260, 175)
+offset_right = 240.0
+offset_bottom = 135.0
+
+[node name="PolaroidFrame" type="Sprite2D" parent="."]
+position = Vector2(129, 87)
+texture = ExtResource("1_xvtgu")
 
 [node name="PhotoTexture" type="TextureRect" parent="."]
-custom_minimum_size = Vector2(192, 108)
-layout_mode = 2
-offset_right = 105.0
-offset_bottom = 103.0
+custom_minimum_size = Vector2(240, 135)
+layout_mode = 1
+offset_left = 9.0
+offset_top = 10.0
+offset_right = 249.0
+offset_bottom = 145.0
 size_flags_horizontal = 3
 stretch_mode = 5
-metadata/_edit_use_anchors_ = true

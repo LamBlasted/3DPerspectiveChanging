@@ -76,7 +76,7 @@ func take_photo():
 	await get_tree().process_frame
 
 	var image = sub_viewport.get_texture().get_image()
-	image.resize(240.0, 135.0, Image.INTERPOLATE_LANCZOS)
+	image.resize(288.0, 162.0, Image.INTERPOLATE_LANCZOS)
 	var texture := ImageTexture.create_from_image(image)
 	GalleryUi.update_gallery(texture)
 "
