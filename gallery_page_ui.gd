@@ -7,6 +7,7 @@ const MAX_PHOTOS = 12
 @onready var log_page: Control = $LogPage
 @onready var cover_page: Control = $CoverPage
 
+
 var photo_panel_scene = preload("res://photo_panel.tscn") 
 var photo_index = 0
 var photo_count = 0

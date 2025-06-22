@@ -1,8 +1,63 @@
-[gd_scene load_steps=2 format=3 uid="uid://d1dxp8wxs6n2v"]
+[gd_scene load_steps=7 format=3 uid="uid://d1dxp8wxs6n2v"]
 
 [ext_resource type="Texture2D" uid="uid://dbuokfew5l5sn" path="res://Camera UI.png" id="1_js8ic"]
+[ext_resource type="Script" uid="uid://dkowa666a5owa" path="res://camera_ui.gd" id="1_r0gvv"]
+
+[sub_resource type="Animation" id="Animation_js8ic"]
+resource_name = "default"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_r0gvv"]
+resource_name = "taking_photo"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_v183y"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rmcrb"]
+_data = {
+&"RESET": SubResource("Animation_v183y"),
+&"default": SubResource("Animation_js8ic"),
+&"taking_photo": SubResource("Animation_r0gvv")
+}
 
 [node name="CameraUI" type="CanvasLayer"]
+script = ExtResource("1_r0gvv")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -13,5 +68,20 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CameraUi" type="Sprite2D" parent="Control"]
-position = Vector2(575, 320)
+position = Vector2(576, 324)
 texture = ExtResource("1_js8ic")
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
+[node name="CameraAnimationPlayer" type="AnimationPlayer" parent="Control"]
+root_node = NodePath("../..")
+libraries = {
+&"": SubResource("AnimationLibrary_rmcrb")
+}

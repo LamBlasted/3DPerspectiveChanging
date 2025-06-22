@@ -18,7 +18,6 @@ const JUMP_VELOCITY = 4.5
 @onready var capture_camera: Camera3D = $CameraController/SubViewport/CaptureHead/CaptureCamera3D
 
 
-
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	GalleryUi.visible = false
@@ -34,12 +33,15 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"gallery_open\"):
-		GalleryUi.visible = not GalleryUi.visible
+		if camera_controller.using_first_person == false:
+			GalleryUi.visible = not GalleryUi.visible
 		
-		if GalleryUi.visible:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			if GalleryUi.visible:
+				Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			else:
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			return
 
 
 
@@ -51,7 +53,6 @@ func _physics_process(delta: float) -> void:
 		velocity.y = JUMP_VELOCITY
 
 	if camera_controller.using_first_person:
-		# No horizontal movement in FP
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 	else:
@@ -66,18 +67,19 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 			velocity.z = move_toward(velocity.z, 0, SPEED)
-
 	move_and_slide()
 
 func take_photo():
+	if GalleryUi.photo_count < GalleryUi.MAX_PHOTOS:
+		CameraUi.camera_animation_player.play(\"taking_photo\")
 	capture_camera.global_transform = fp_camera.global_transform
 	
 	await get_tree().process_frame
 	await get_tree().process_frame
-
+	
 	var image = sub_viewport.get_texture().get_image()
 	image.resize(240.0, 135.0, Image.INTERPOLATE_LANCZOS)
-	var texture := ImageTexture.create_from_image(image)
+	var texture = ImageTexture.create_from_image(image)
 	GalleryUi.update_gallery(texture)
 "
 
